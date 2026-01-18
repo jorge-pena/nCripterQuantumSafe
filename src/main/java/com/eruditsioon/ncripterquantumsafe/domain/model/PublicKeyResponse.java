@@ -1,4 +1,4 @@
-package com.eruditsioon.ncripterquantumsafe.entity;
+package com.eruditsioon.ncripterquantumsafe.domain.model;
 
 public class PublicKeyResponse {
     private byte[] encodedPublicKey;

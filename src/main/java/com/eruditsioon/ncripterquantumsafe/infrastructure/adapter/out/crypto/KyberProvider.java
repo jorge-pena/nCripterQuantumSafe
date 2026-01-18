@@ -1,5 +1,6 @@
-package com.eruditsioon.ncripterquantumsafe.engine;
+package com.eruditsioon.ncripterquantumsafe.infrastructure.adapter.out.crypto;
 
+import com.eruditsioon.ncripterquantumsafe.domain.port.out.CryptoEngine;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.*;
@@ -12,7 +13,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 @Component
-public class KyberProvider {
+public class KyberProvider implements CryptoEngine {
 
     private static final String KEM_ALGORITHM = "ML-KEM";
     private static final String KYBER_ALGORITHM = "ML-KEM-1024";
@@ -21,26 +22,27 @@ public class KyberProvider {
     private static final int GCM_NONCE_LENGTH = 12; // 96 bits
     private static final int GCM_TAG_LENGTH = 16; // 128 bits
 
-    public byte[] getKyberPublicKey(String  keyLabel){
+    public byte[] getKyberPublicKey(String keyLabel) {
         try {
 
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            System.out.println("Reading file: " + keyLabel+".pub");
-            return Files.readAllBytes(Paths.get(keyLabel+".pub"));
+            System.out.println("Reading file: " + keyLabel + ".pub");
+            return Files.readAllBytes(Paths.get(keyLabel + ".pub"));
 
-
-//           return Files.readAllBytes(Paths.get(keyLabel+".pub"));
+            // return Files.readAllBytes(Paths.get(keyLabel+".pub"));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    public byte[] decapsulateEncryptionAESGCM(byte[] encapsulation, byte[]initializationVector, byte[] cryptogram, String keyLabel){
+
+    public byte[] decapsulateEncryptionAESGCM(byte[] encapsulation, byte[] initializationVector, byte[] cryptogram,
+            String keyLabel) {
         try {
             /// Load ML-KEM Private Key from file
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            System.out.println("Reading file: " + keyLabel+".prv");
-            byte[] encodedPrivateKey = Files.readAllBytes(Paths.get(keyLabel+".prv"));
+            System.out.println("Reading file: " + keyLabel + ".prv");
+            byte[] encodedPrivateKey = Files.readAllBytes(Paths.get(keyLabel + ".prv"));
             KeyFactory keyFactory = KeyFactory.getInstance(KEM_ALGORITHM);
             PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
             PrivateKey kyberPrivateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
@@ -49,17 +51,16 @@ public class KyberProvider {
             KEM kem = KEM.getInstance(KEM_ALGORITHM);
             KEM.Decapsulator decapsulator = kem.newDecapsulator(kyberPrivateKey);
             SecretKey sharedSecretKey = decapsulator.decapsulate(
-                    encapsulation, 0, AES_KEY_SIZE_BITS / 8, "AES"
-            );
+                    encapsulation, 0, AES_KEY_SIZE_BITS / 8, "AES");
             Cipher cipherDecrypt = Cipher.getInstance(SYMMETRIC_ALGORITHM);
             GCMParameterSpec gcmSpecDecrypt = new GCMParameterSpec(GCM_TAG_LENGTH * 8, initializationVector);
             cipherDecrypt.init(Cipher.DECRYPT_MODE, sharedSecretKey, gcmSpecDecrypt);
             byte[] clearData = cipherDecrypt.doFinal(cryptogram);
             return clearData;
 
-        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException | InvalidKeyException |
-                 DecapsulateException | NoSuchPaddingException | InvalidAlgorithmParameterException |
-                 BadPaddingException | IllegalBlockSizeException e) {
+        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException | InvalidKeyException
+                | DecapsulateException | NoSuchPaddingException | InvalidAlgorithmParameterException
+                | BadPaddingException | IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         }
 

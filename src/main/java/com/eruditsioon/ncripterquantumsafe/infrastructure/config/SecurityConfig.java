@@ -1,4 +1,4 @@
-package com.eruditsioon.ncripterquantumsafe;
+package com.eruditsioon.ncripterquantumsafe.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig  {
+public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -19,8 +19,7 @@ public class SecurityConfig  {
                 // Allow unauthenticated access to specific endpoints
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/qs-crypto/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .anyRequest().authenticated());
         return http.build();
     }
 }
