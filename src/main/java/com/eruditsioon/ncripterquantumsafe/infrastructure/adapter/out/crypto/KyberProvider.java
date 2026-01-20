@@ -16,7 +16,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 public class KyberProvider implements CryptoEngine {
 
     private static final String KEM_ALGORITHM = "ML-KEM";
-    private static final String KYBER_ALGORITHM = "ML-KEM-1024";
+
     private static final int AES_KEY_SIZE_BITS = 256;
     private static final String SYMMETRIC_ALGORITHM = "AES/GCM/NoPadding";
     private static final int GCM_NONCE_LENGTH = 12; // 96 bits
@@ -39,6 +39,9 @@ public class KyberProvider implements CryptoEngine {
     public byte[] decapsulateEncryptionAESGCM(byte[] encapsulation, byte[] initializationVector, byte[] cryptogram,
             String keyLabel) {
         try {
+            if (initializationVector.length != GCM_NONCE_LENGTH) {
+                throw new IllegalArgumentException("Invalid IV length. Expected " + GCM_NONCE_LENGTH + " bytes.");
+            }
             /// Load ML-KEM Private Key from file
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             System.out.println("Reading file: " + keyLabel + ".prv");
