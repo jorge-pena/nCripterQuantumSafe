@@ -1,5 +1,6 @@
 package com.eruditsioon.ncripterquantumsafe.infrastructure.adapter.out.crypto;
 
+import com.eruditsioon.ncripterquantumsafe.domain.exception.nCripterException;
 import com.eruditsioon.ncripterquantumsafe.domain.port.out.CryptoEngine;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +33,7 @@ public class KyberProvider implements CryptoEngine {
             // return Files.readAllBytes(Paths.get(keyLabel+".pub"));
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new nCripterException("Failed to read Kyber public key", e);
         }
     }
 
@@ -64,7 +65,7 @@ public class KyberProvider implements CryptoEngine {
         } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException | InvalidKeyException
                 | DecapsulateException | NoSuchPaddingException | InvalidAlgorithmParameterException
                 | BadPaddingException | IllegalBlockSizeException e) {
-            throw new RuntimeException(e);
+            throw new nCripterException("Decapsulation failed", e);
         }
 
     }
