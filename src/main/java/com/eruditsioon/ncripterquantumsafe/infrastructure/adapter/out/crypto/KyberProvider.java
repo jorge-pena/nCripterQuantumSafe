@@ -70,4 +70,37 @@ public class KyberProvider implements CryptoEngine {
 
     }
 
+    @Override
+    public void generateMLDSAKeyPair(String keyLabel, String parameterSet, String keyVaultPath) {
+        try {
+            // Validate and normalize parameter set (e.g., ML_DSA_44 -> ML-DSA-44)
+            String normalizedAlgo = parameterSet.replace("_", "-");
+
+            // Generate Key Pair
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance(normalizedAlgo);
+            KeyPair kp = kpg.generateKeyPair();
+
+            // Ensure KeyVault directory exists
+            java.nio.file.Path vaultDir = Paths.get(keyVaultPath);
+            if (!Files.exists(vaultDir)) {
+                Files.createDirectories(vaultDir);
+            }
+
+            // Serialize Public Key (.pub)
+            java.nio.file.Path publicKeyPath = vaultDir.resolve(keyLabel + ".pub");
+            Files.write(publicKeyPath, kp.getPublic().getEncoded());
+
+            // Serialize Private Key (.prv)
+            java.nio.file.Path privateKeyPath = vaultDir.resolve(keyLabel + ".prv");
+            Files.write(privateKeyPath, kp.getPrivate().getEncoded());
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new nCripterException("Failed to generate ML-DSA key pair: Invalid parameter set " + parameterSet, e);
+        } catch (IOException e) {
+            throw new nCripterException("Failed to save ML-DSA key pair for label " + keyLabel, e);
+        } catch (Exception e) {
+            throw new nCripterException("Unexpected error during key generation: " + e.getMessage(), e);
+        }
+    }
+
 }
