@@ -65,7 +65,7 @@ public class QuantumSafeController {
         }
     }
 
-    @PostMapping("/sign")
+    @PostMapping("/sign-ml-dsa")
     public com.eruditsioon.ncripterquantumsafe.domain.model.SignResponse sign(
             @RequestBody com.eruditsioon.ncripterquantumsafe.domain.model.SignRequest request) {
         if (request.getKeyLabel() == null || request.getData() == null) {
@@ -80,7 +80,7 @@ public class QuantumSafeController {
         }
     }
 
-    @PostMapping("/verify")
+    @PostMapping("/verify-ml-dsa")
     public com.eruditsioon.ncripterquantumsafe.domain.model.VerifyResponse verify(
             @RequestBody com.eruditsioon.ncripterquantumsafe.domain.model.VerifyRequest request) {
         if (request.getKeyLabel() == null || request.getData() == null || request.getSignature() == null) {

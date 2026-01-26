@@ -97,7 +97,7 @@
 			"response": []
 		},
 		{
-			"name": "sign",
+			"name": "sign-ml-dsa",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -111,7 +111,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/sign",
+					"raw": "http://localhost:8834/api/qs-crypto/sign-ml-dsa",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -120,14 +120,14 @@
 					"path": [
 						"api",
 						"qs-crypto",
-						"sign"
+						"sign-ml-dsa"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "verify",
+			"name": "verify-ml-dsa",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -141,7 +141,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/verify",
+					"raw": "http://localhost:8834/api/qs-crypto/verify-ml-dsa",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -150,7 +150,7 @@
 					"path": [
 						"api",
 						"qs-crypto",
-						"verify"
+						"verify-ml-dsa"
 					]
 				}
 			},
