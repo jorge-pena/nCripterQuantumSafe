@@ -1,7 +1,9 @@
 package com.eruditsioon.ncripterquantumsafe.domain.port.in;
 
-import com.eruditsioon.ncripterquantumsafe.domain.model.GenerateMLDSAKeyPairResponse;
-
 public interface DigitalSignatureUseCase {
-    GenerateMLDSAKeyPairResponse generateMLDSAKeyPair(String keyLabel, String parameterSet);
+    void generateMLDSAKeyPair(String keyLabel, String parameterSet);
+
+    byte[] signMLDSA(String keyLabel, byte[] data);
+
+    boolean verifyMLDSA(String keyLabel, byte[] data, byte[] signature);
 }

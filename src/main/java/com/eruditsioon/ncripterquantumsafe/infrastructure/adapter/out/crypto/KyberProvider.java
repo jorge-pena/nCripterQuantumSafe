@@ -17,11 +17,15 @@ import java.security.spec.PKCS8EncodedKeySpec;
 public class KyberProvider implements CryptoEngine {
 
     private static final String KEM_ALGORITHM = "ML-KEM";
+    private static final String ML_DSA_ALGORITHM = "ML-DSA";
 
     private static final int AES_KEY_SIZE_BITS = 256;
     private static final String SYMMETRIC_ALGORITHM = "AES/GCM/NoPadding";
     private static final int GCM_NONCE_LENGTH = 12; // 96 bits
     private static final int GCM_TAG_LENGTH = 16; // 128 bits
+
+    @org.springframework.beans.factory.annotation.Value("${crypto.keyvault:./KeyVault}")
+    private String keyVaultPath;
 
     public byte[] getKyberPublicKey(String keyLabel) {
         try {
@@ -71,7 +75,7 @@ public class KyberProvider implements CryptoEngine {
     }
 
     @Override
-    public void generateMLDSAKeyPair(String keyLabel, String parameterSet, String keyVaultPath) {
+    public void generateMLDSAKeyPair(String keyLabel, String parameterSet) {
         try {
             // Validate and normalize parameter set (e.g., ML_DSA_44 -> ML-DSA-44)
             String normalizedAlgo = parameterSet.replace("_", "-");
@@ -103,4 +107,57 @@ public class KyberProvider implements CryptoEngine {
         }
     }
 
+    @Override
+    public byte[] signMLDSA(String keyLabel, byte[] data) {
+        try {
+            // Read Private Key
+            java.nio.file.Path privateKeyPath = Paths.get(keyVaultPath, keyLabel + ".prv");
+            if (!Files.exists(privateKeyPath)) {
+                throw new nCripterException("Private key not found for label: " + keyLabel);
+            }
+            byte[] encodedPrivateKey = Files.readAllBytes(privateKeyPath);
+
+            // Reconstruct Private Key
+            KeyFactory keyFactory = KeyFactory.getInstance(ML_DSA_ALGORITHM);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
+            PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+
+            // Sign Data
+            Signature signer = Signature.getInstance(ML_DSA_ALGORITHM);
+            signer.initSign(privateKey);
+            signer.update(data);
+            return signer.sign();
+
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException
+                | SignatureException e) {
+            throw new nCripterException("Signing failed for label: " + keyLabel, e);
+        }
+    }
+
+    @Override
+    public boolean verifyMLDSA(String keyLabel, byte[] data, byte[] signature) {
+        try {
+            // Read Public Key
+            java.nio.file.Path publicKeyPath = Paths.get(keyVaultPath, keyLabel + ".pub");
+            if (!Files.exists(publicKeyPath)) {
+                throw new nCripterException("Public key not found for label: " + keyLabel);
+            }
+            byte[] encodedPublicKey = Files.readAllBytes(publicKeyPath);
+
+            // Reconstruct Public Key
+            KeyFactory keyFactory = KeyFactory.getInstance(ML_DSA_ALGORITHM);
+            java.security.spec.X509EncodedKeySpec keySpec = new java.security.spec.X509EncodedKeySpec(encodedPublicKey);
+            PublicKey publicKey = keyFactory.generatePublic(keySpec);
+
+            // Verify Signature
+            Signature verifier = Signature.getInstance(ML_DSA_ALGORITHM);
+            verifier.initVerify(publicKey);
+            verifier.update(data);
+            return verifier.verify(signature);
+
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException
+                | SignatureException e) {
+            throw new nCripterException("Verification failed for label: " + keyLabel, e);
+        }
+    }
 }

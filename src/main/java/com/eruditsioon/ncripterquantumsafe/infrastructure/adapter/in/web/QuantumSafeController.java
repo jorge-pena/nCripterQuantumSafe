@@ -46,23 +46,53 @@ public class QuantumSafeController {
     @PostMapping("/generate-ml-dsa-key-pair")
     public GenerateMLDSAKeyPairResponse generateMLDSAKeyPair(@RequestBody GenerateMLDSAKeyPairRequest request) {
         // Validate Key Label
-        if (!request.getKeyLabel().matches("^[a-z0-9-]+$")) {
-            throw new nCripterException("Failed to Create Key Pair:" + request.getKeyLabel() + " "
-                    + request.getParameterSet() + ". Invalid key label format.");
+        if (request.getKeyLabel() == null || !request.getKeyLabel().matches("^[a-z0-9-]+$")) {
+            throw new nCripterException("Invalid key label format.");
         }
 
         // Validate Parameter Set
         Set<String> validParams = Set.of("ML_DSA_44", "ML_DSA_65", "ML_DSA_87");
-        if (!validParams.contains(request.getParameterSet())) {
-            throw new nCripterException("Failed to Create Key Pair:" + request.getKeyLabel() + " "
-                    + request.getParameterSet() + ". Invalid parameter set.");
+        if (request.getParameterSet() == null || !validParams.contains(request.getParameterSet())) {
+            throw new nCripterException("Invalid parameter set.");
         }
 
         try {
-            return digitalSignatureUseCase.generateMLDSAKeyPair(request.getKeyLabel(), request.getParameterSet());
+            digitalSignatureUseCase.generateMLDSAKeyPair(request.getKeyLabel(), request.getParameterSet());
+            return new GenerateMLDSAKeyPairResponse(request.getKeyLabel(), request.getParameterSet(), "Success");
         } catch (Exception e) {
             throw new nCripterException(
                     "Failed to Create Key Pair:" + request.getKeyLabel() + " " + request.getParameterSet(), e);
+        }
+    }
+
+    @PostMapping("/sign")
+    public com.eruditsioon.ncripterquantumsafe.domain.model.SignResponse sign(
+            @RequestBody com.eruditsioon.ncripterquantumsafe.domain.model.SignRequest request) {
+        if (request.getKeyLabel() == null || request.getData() == null) {
+            throw new IllegalArgumentException("Key label and data must not be null.");
+        }
+        try {
+            byte[] signature = digitalSignatureUseCase.signMLDSA(request.getKeyLabel(), request.getData());
+            return new com.eruditsioon.ncripterquantumsafe.domain.model.SignResponse(request.getKeyLabel(), signature,
+                    "Success");
+        } catch (Exception e) {
+            throw new nCripterException("Signing failed", e);
+        }
+    }
+
+    @PostMapping("/verify")
+    public com.eruditsioon.ncripterquantumsafe.domain.model.VerifyResponse verify(
+            @RequestBody com.eruditsioon.ncripterquantumsafe.domain.model.VerifyRequest request) {
+        if (request.getKeyLabel() == null || request.getData() == null || request.getSignature() == null) {
+            throw new IllegalArgumentException("Key label, data, and signature must not be null.");
+        }
+        try {
+            boolean isValid = digitalSignatureUseCase.verifyMLDSA(request.getKeyLabel(), request.getData(),
+                    request.getSignature());
+            return new com.eruditsioon.ncripterquantumsafe.domain.model.VerifyResponse(isValid,
+                    isValid ? "Signature is valid" : "Signature is invalid");
+        } catch (Exception e) {
+            throw new nCripterException("Verification failed", e);
         }
     }
 

@@ -18,8 +18,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 // Allow unauthenticated access to specific endpoints
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/qs-crypto/**").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
         return http.build();
     }
 }

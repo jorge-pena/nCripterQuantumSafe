@@ -95,6 +95,66 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "sign",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"keyLabel\": \"test-dsa-key\",\n  \"data\": \"SGVsbG8gV29ybGQ=\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8834/api/qs-crypto/sign",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8834",
+					"path": [
+						"api",
+						"qs-crypto",
+						"sign"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verify",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"keyLabel\": \"test-dsa-key\",\n  \"data\": \"SGVsbG8gV29ybGQ=\",\n  \"signature\": \"<BASE64_SIGNATURE>\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8834/api/qs-crypto/verify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8834",
+					"path": [
+						"api",
+						"qs-crypto",
+						"verify"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
