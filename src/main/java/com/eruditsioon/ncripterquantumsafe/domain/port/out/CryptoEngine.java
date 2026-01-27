@@ -8,6 +8,8 @@ public interface CryptoEngine {
 
     void generateMLDSAKeyPair(String keyLabel, String parameterSet);
 
+    void generateMLKEMKeyPair(String keyLabel, String parameterSet);
+
     byte[] signMLDSA(String keyLabel, byte[] data);
 
     boolean verifyMLDSA(String keyLabel, byte[] data, byte[] signature);

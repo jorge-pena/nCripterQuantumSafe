@@ -23,4 +23,9 @@ public class KeyEncapsulationService implements KeyEncapsulationUseCase {
         System.out.println("Decapsulating SERVICE AES GCM Key Label " + keyLabel);
         return cryptoEngine.decapsulateEncryptionAESGCM(encapsulation, initializationVector, cryptogram, keyLabel);
     }
+
+    @Override
+    public void generateMLKEMKeyPair(String keyLabel, String parameterSet) {
+        cryptoEngine.generateMLKEMKeyPair(keyLabel, parameterSet);
+    }
 }

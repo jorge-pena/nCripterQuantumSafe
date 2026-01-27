@@ -16,7 +16,7 @@ DATA="SGVsbG8gV29ybGQ="
 echo "Signing Data ($DATA)..."
 SIGN_RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
   -d "{\"keyLabel\": \"testmldsa\", \"data\": \"$DATA\"}" \
-  $URL/sign)
+  $URL/sign-ml-dsa)
 echo $SIGN_RESPONSE
 echo -e "\n"
 
@@ -37,5 +37,5 @@ echo "Extracted Signature: ${SIGNATURE:0:20}..."
 echo "Verifying Signature..."
 curl -s -X POST -H "Content-Type: application/json" \
   -d "{\"keyLabel\": \"testmldsa\", \"data\": \"$DATA\", \"signature\": \"$SIGNATURE\"}" \
-  $URL/verify
+  $URL/verify-ml-dsa
 echo -e "\n"

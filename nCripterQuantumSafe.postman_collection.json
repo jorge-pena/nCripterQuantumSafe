@@ -21,12 +21,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/request-kyber-public-key",
+					"raw": "http://localhost:4434/api/qs-crypto/request-kyber-public-key",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8834",
+					"port": "4434",
 					"path": [
 						"api",
 						"qs-crypto",
@@ -51,12 +51,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/decapsulate-encryption-aes-gcm",
+					"raw": "http://localhost:4434/api/qs-crypto/decapsulate-encryption-aes-gcm",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8834",
+					"port": "4434",
 					"path": [
 						"api",
 						"qs-crypto",
@@ -81,12 +81,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/generate-ml-dsa-key-pair",
+					"raw": "http://localhost:4434/api/qs-crypto/generate-ml-dsa-key-pair",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8834",
+					"port": "4434",
 					"path": [
 						"api",
 						"qs-crypto",
@@ -111,12 +111,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/sign-ml-dsa",
+					"raw": "http://localhost:4434/api/qs-crypto/sign-ml-dsa",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8834",
+					"port": "4434",
 					"path": [
 						"api",
 						"qs-crypto",
@@ -141,16 +141,46 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8834/api/qs-crypto/verify-ml-dsa",
+					"raw": "http://localhost:4434/api/qs-crypto/verify-ml-dsa",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "8834",
+					"port": "4434",
 					"path": [
 						"api",
 						"qs-crypto",
 						"verify-ml-dsa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate-ml-kem-key-pair",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"keyLabel\": \"test-kem-key\",\n  \"parameterSet\": \"ML_KEM_768\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4434/api/qs-crypto/generate-ml-kem-key-pair",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4434",
+					"path": [
+						"api",
+						"qs-crypto",
+						"generate-ml-kem-key-pair"
 					]
 				}
 			},

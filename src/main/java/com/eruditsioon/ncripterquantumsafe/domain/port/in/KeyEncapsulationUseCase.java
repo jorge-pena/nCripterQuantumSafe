@@ -5,4 +5,6 @@ public interface KeyEncapsulationUseCase {
 
     byte[] decapsulateEncryptionAESGCM(byte[] encapsulation, byte[] initializationVector, byte[] cryptogram,
             String keyLabel);
+
+    void generateMLKEMKeyPair(String keyLabel, String parameterSet);
 }

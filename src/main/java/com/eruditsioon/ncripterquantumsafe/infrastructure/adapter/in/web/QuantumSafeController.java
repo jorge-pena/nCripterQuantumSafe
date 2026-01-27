@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.eruditsioon.ncripterquantumsafe.domain.model.GenerateMLKEMKeyPairRequest;
+import com.eruditsioon.ncripterquantumsafe.domain.model.GenerateMLKEMKeyPairResponse;
 
 @RestController
 @RequestMapping("/api/qs-crypto")
@@ -59,6 +61,28 @@ public class QuantumSafeController {
         try {
             digitalSignatureUseCase.generateMLDSAKeyPair(request.getKeyLabel(), request.getParameterSet());
             return new GenerateMLDSAKeyPairResponse(request.getKeyLabel(), request.getParameterSet(), "Success");
+        } catch (Exception e) {
+            throw new nCripterException(
+                    "Failed to Create Key Pair:" + request.getKeyLabel() + " " + request.getParameterSet(), e);
+        }
+    }
+
+    @PostMapping("/generate-ml-kem-key-pair")
+    public GenerateMLKEMKeyPairResponse generateMLKEMKeyPair(@RequestBody GenerateMLKEMKeyPairRequest request) {
+        // Validate Key Label
+        if (request.getKeyLabel() == null || !request.getKeyLabel().matches("^[a-z0-9-]+$")) {
+            throw new nCripterException("Invalid key label format.");
+        }
+
+        // Validate Parameter Set
+        Set<String> validParams = Set.of("ML_KEM_512", "ML_KEM_768", "ML_KEM_1024");
+        if (request.getParameterSet() == null || !validParams.contains(request.getParameterSet())) {
+            throw new nCripterException("Invalid parameter set.");
+        }
+
+        try {
+            keyEncapsulationUseCase.generateMLKEMKeyPair(request.getKeyLabel(), request.getParameterSet());
+            return new GenerateMLKEMKeyPairResponse(request.getKeyLabel(), request.getParameterSet(), "Success");
         } catch (Exception e) {
             throw new nCripterException(
                     "Failed to Create Key Pair:" + request.getKeyLabel() + " " + request.getParameterSet(), e);
