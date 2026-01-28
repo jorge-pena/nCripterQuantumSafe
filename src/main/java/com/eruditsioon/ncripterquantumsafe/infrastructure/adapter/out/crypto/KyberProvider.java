@@ -30,11 +30,11 @@ public class KyberProvider implements CryptoEngine {
     public byte[] getKyberPublicKey(String keyLabel) {
         try {
 
-            System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            System.out.println("Reading file: " + keyLabel + ".pub");
-            return Files.readAllBytes(Paths.get(keyLabel + ".pub"));
-
-            // return Files.readAllBytes(Paths.get(keyLabel+".pub"));
+            java.nio.file.Path publicKeyPath = Paths.get(keyVaultPath, keyLabel + ".pub");
+            if (!Files.exists(publicKeyPath)) {
+                throw new nCripterException("Public key not found for label: " + keyLabel);
+            }
+            return Files.readAllBytes(publicKeyPath);
 
         } catch (IOException e) {
             throw new nCripterException("Failed to read Kyber public key", e);
@@ -48,9 +48,11 @@ public class KyberProvider implements CryptoEngine {
                 throw new IllegalArgumentException("Invalid IV length. Expected " + GCM_NONCE_LENGTH + " bytes.");
             }
             /// Load ML-KEM Private Key from file
-            System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            System.out.println("Reading file: " + keyLabel + ".prv");
-            byte[] encodedPrivateKey = Files.readAllBytes(Paths.get(keyLabel + ".prv"));
+            java.nio.file.Path privateKeyPath = Paths.get(keyVaultPath, keyLabel + ".prv");
+            if (!Files.exists(privateKeyPath)) {
+                throw new nCripterException("Private key not found for label: " + keyLabel);
+            }
+            byte[] encodedPrivateKey = Files.readAllBytes(privateKeyPath);
             KeyFactory keyFactory = KeyFactory.getInstance(KEM_ALGORITHM);
             PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
             PrivateKey kyberPrivateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
