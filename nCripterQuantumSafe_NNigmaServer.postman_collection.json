@@ -1,0 +1,196 @@
+{
+    "info": {
+        "_postman_id": "ed00bbfc-8a3f-44e2-bce6-bbd17c818cbf",
+        "name": "nCripterQuantumSafe-Remote",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "26667186"
+    },
+    "item": [
+        {
+            "name": "request-kyber-public-key",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"kyber-test-768\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/request-kyber-public-key",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "request-kyber-public-key"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "decapsulate-encryption-aes-gcm",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"keyLabel\": \"kyber-test-768\",\n    \"initializationVector\": \"XjDiYz04pktlEdt2\",\n    \"cryptogram\": \"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\",\n    \"encapsulation\": \"G0wXBWMpUzztoEJZqz+oS/b+0bZYeYmDUlqY/OObmFUZHbDJq8fp18IXKkncHWEPKBS7xjTQ6/aKcPSM4pJTzlnOCa7VEXHc6gYMX0XuOAFB7oBwhQ4zgw7bzxrrAZUfDNRHYjuP2oKMl/c48rwIDdxWnqG3oE766jS1de1EK5qyqzw75P1AphV7CiIsdSL8+AjI9mgLmpLIYJkfr2ImTs6TwEVPDlGaFq/FV2qzCEW62fIYWajxaXsOHLT3tOnQnzVcBSSLtivBuKEYcGnPALU0KaXp8fACn10iwLm25Z8WM+dU4HFKwxIXN+7cTyXsyjssNWue8NUtnl9I5NKWlW40KGddcfng309OeuIPg4gTo04QGQeRCwCO8x0n303506jrEkkYHx8Tp9oBr4e3Vc4y+P1IyNUOIBp21LcK6UMy2maRdtUMfzvKiExgdVJBOCyekvNmo4ztsPqwvxdMYWOTgFMvkUxTB6U+tn18K2n08P8b4gxn7obsqgj3OZi4x3mO7A5STBR+vUYscof8PxZZGFFZBrI5N1xtcPPVdLDZaKHvi3WgytKfihRH71qCU3MrxPb7gi0wbkzQkR6phWH9gHuOUDgBsxfkgwyhfcDhx86gwR7423ADE6CWr2ar80OPJKgKW5+0NggzRiax/ZmEQNV9oQyOU1DK2sCX9+DmsADqkHcja3iFXJ7UsagP6zFJ+JMiZYMMX5TfrJHYlPvD6QLP0cb2PQYnO5aogkJn+4Ihbfg4BHm0wyb/ccr3udYT3HR08iwUZc9t6y75KrG+r0B/TdIH49bBW1R01GcFzOKlvtfeakk5X/cnRJIrwBMsQdehmTlNgcKquKcEKlhL2JifFtwuXZ6fkA/6q5jcvf4A4EM4x4jvafPosg+ROFuQxEKp081N1Ldsmq9fw1lPjWDAQ14/U7lWGAO3BDnq3ziSTR0CFusynQhlmZbc50fy26IbZajioUuBxhoIAC8fsq7J2D2CBWNO/vKf9ku9MTUP+doEZJj5QdXWm7qMEXXOhZOyXWQMRyp5wvxQBJaz18tdf+T/GtMdKYmK/OORLQUIxb5Wrw5axDi/9LRmnOWtAf15LcHGuPlNz080yePG7ByZ4bvR0NR2TC0tJxQ31jNHhlDgY5iO4lNeZPEIr1SlWOoovoxrwcYAjsIbN9kfxhI+dwRWCzedEJLKkhbOmvIcoZ3REiXEGr7sP9e1rnjlMHgw+WRJFUz9D+xhR42V93DWCTKEsTo8avGQWIK9WhvEicS8/Uzn32X7inuCczetGgIg0ZrGItY+O2jj5owX9BRo2u0GwrJrtbqvnSiWgIK8MPWg7t3y902XPZUodZav0oCCueiAPJI93crV65WnuGKPApoO3SNc1e+8xmXXNozgTy5Nj7EMgUKVT/SPxUwHZnRP37wT70KtspbSsaK1BFXlKMkcC45nLgdi/4o=\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/decapsulate-encryption-aes-gcm",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "decapsulate-encryption-aes-gcm"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "generate-ml-dsa-key-pair",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-dsa-key\",\n  \"parameterSet\": \"ML_DSA_44\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/generate-ml-dsa-key-pair",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "generate-ml-dsa-key-pair"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "sign-ml-dsa",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-dsa-key\",\n  \"data\": \"SGVsbG8gV29ybGQ=\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/sign-ml-dsa",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "sign-ml-dsa"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "verify-ml-dsa",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-dsa-key\",\n  \"data\": \"SGVsbG8gV29ybGQ=\",\n  \"signature\": \"<BASE64_SIGNATURE>\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/verify-ml-dsa",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "verify-ml-dsa"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "generate-ml-kem-key-pair",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-kem-key\",\n  \"parameterSet\": \"ML_KEM_768\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/generate-ml-kem-key-pair",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "generate-ml-kem-key-pair"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}

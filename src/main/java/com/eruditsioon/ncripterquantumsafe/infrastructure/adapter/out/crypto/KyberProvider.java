@@ -24,15 +24,25 @@ public class KyberProvider implements CryptoEngine {
     private static final int GCM_NONCE_LENGTH = 12; // 96 bits
     private static final int GCM_TAG_LENGTH = 16; // 128 bits
 
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(KyberProvider.class);
+
     @org.springframework.beans.factory.annotation.Value("${crypto.keyvault:./KeyVault}")
     private String keyVaultPath;
 
+    private java.nio.file.Path getKeyPath(String keyLabel, String extension) {
+        String safePath = (keyVaultPath == null || keyVaultPath.trim().isEmpty()) ? "./KeyVault" : keyVaultPath;
+        java.nio.file.Path vaultDir = Paths.get(safePath);
+        java.nio.file.Path keyPath = vaultDir.resolve(keyLabel + extension).toAbsolutePath();
+        logger.info("Resolved key path for label '{}' to: '{}'", keyLabel, keyPath);
+        return keyPath;
+    }
+
     public byte[] getKyberPublicKey(String keyLabel) {
         try {
-
-            java.nio.file.Path publicKeyPath = Paths.get(keyVaultPath, keyLabel + ".pub");
+            java.nio.file.Path publicKeyPath = getKeyPath(keyLabel, ".pub");
             if (!Files.exists(publicKeyPath)) {
-                throw new nCripterException("Public key not found for label: " + keyLabel);
+                logger.error("Public key file not found at: {}", publicKeyPath);
+                throw new nCripterException("Public key not found for label: " + keyLabel + " at " + publicKeyPath);
             }
             return Files.readAllBytes(publicKeyPath);
 
@@ -48,9 +58,10 @@ public class KyberProvider implements CryptoEngine {
                 throw new IllegalArgumentException("Invalid IV length. Expected " + GCM_NONCE_LENGTH + " bytes.");
             }
             /// Load ML-KEM Private Key from file
-            java.nio.file.Path privateKeyPath = Paths.get(keyVaultPath, keyLabel + ".prv");
+            java.nio.file.Path privateKeyPath = getKeyPath(keyLabel, ".prv");
             if (!Files.exists(privateKeyPath)) {
-                throw new nCripterException("Private key not found for label: " + keyLabel);
+                logger.error("Private key file not found at: {}", privateKeyPath);
+                throw new nCripterException("Private key not found for label: " + keyLabel + " at " + privateKeyPath);
             }
             byte[] encodedPrivateKey = Files.readAllBytes(privateKeyPath);
             KeyFactory keyFactory = KeyFactory.getInstance(KEM_ALGORITHM);
@@ -87,17 +98,18 @@ public class KyberProvider implements CryptoEngine {
             KeyPair kp = kpg.generateKeyPair();
 
             // Ensure KeyVault directory exists
-            java.nio.file.Path vaultDir = Paths.get(keyVaultPath);
+            String safePath = (keyVaultPath == null || keyVaultPath.trim().isEmpty()) ? "./KeyVault" : keyVaultPath;
+            java.nio.file.Path vaultDir = Paths.get(safePath);
             if (!Files.exists(vaultDir)) {
                 Files.createDirectories(vaultDir);
             }
 
             // Serialize Public Key (.pub)
-            java.nio.file.Path publicKeyPath = vaultDir.resolve(keyLabel + ".pub");
+            java.nio.file.Path publicKeyPath = getKeyPath(keyLabel, ".pub");
             Files.write(publicKeyPath, kp.getPublic().getEncoded());
 
             // Serialize Private Key (.prv)
-            java.nio.file.Path privateKeyPath = vaultDir.resolve(keyLabel + ".prv");
+            java.nio.file.Path privateKeyPath = getKeyPath(keyLabel, ".prv");
             Files.write(privateKeyPath, kp.getPrivate().getEncoded());
 
         } catch (NoSuchAlgorithmException e) {
@@ -120,17 +132,18 @@ public class KyberProvider implements CryptoEngine {
             KeyPair kp = kpg.generateKeyPair();
 
             // Ensure KeyVault directory exists
-            java.nio.file.Path vaultDir = Paths.get(keyVaultPath);
+            String safePath = (keyVaultPath == null || keyVaultPath.trim().isEmpty()) ? "./KeyVault" : keyVaultPath;
+            java.nio.file.Path vaultDir = Paths.get(safePath);
             if (!Files.exists(vaultDir)) {
                 Files.createDirectories(vaultDir);
             }
 
             // Serialize Public Key (.pub)
-            java.nio.file.Path publicKeyPath = vaultDir.resolve(keyLabel + ".pub");
+            java.nio.file.Path publicKeyPath = getKeyPath(keyLabel, ".pub");
             Files.write(publicKeyPath, kp.getPublic().getEncoded());
 
             // Serialize Private Key (.prv)
-            java.nio.file.Path privateKeyPath = vaultDir.resolve(keyLabel + ".prv");
+            java.nio.file.Path privateKeyPath = getKeyPath(keyLabel, ".prv");
             Files.write(privateKeyPath, kp.getPrivate().getEncoded());
 
         } catch (NoSuchAlgorithmException e) {
@@ -146,8 +159,9 @@ public class KyberProvider implements CryptoEngine {
     public byte[] signMLDSA(String keyLabel, byte[] data) {
         try {
             // Read Private Key
-            java.nio.file.Path privateKeyPath = Paths.get(keyVaultPath, keyLabel + ".prv");
+            java.nio.file.Path privateKeyPath = getKeyPath(keyLabel, ".prv");
             if (!Files.exists(privateKeyPath)) {
+                logger.error("Private key not found at: {}", privateKeyPath);
                 throw new nCripterException("Private key not found for label: " + keyLabel);
             }
             byte[] encodedPrivateKey = Files.readAllBytes(privateKeyPath);
@@ -173,8 +187,9 @@ public class KyberProvider implements CryptoEngine {
     public boolean verifyMLDSA(String keyLabel, byte[] data, byte[] signature) {
         try {
             // Read Public Key
-            java.nio.file.Path publicKeyPath = Paths.get(keyVaultPath, keyLabel + ".pub");
+            java.nio.file.Path publicKeyPath = getKeyPath(keyLabel, ".pub");
             if (!Files.exists(publicKeyPath)) {
+                logger.error("Public key not found at: {}", publicKeyPath);
                 throw new nCripterException("Public key not found for label: " + keyLabel);
             }
             byte[] encodedPublicKey = Files.readAllBytes(publicKeyPath);
