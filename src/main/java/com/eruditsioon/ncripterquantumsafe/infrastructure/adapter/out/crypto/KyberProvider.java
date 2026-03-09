@@ -2,7 +2,14 @@ package com.eruditsioon.ncripterquantumsafe.infrastructure.adapter.out.crypto;
 
 import com.eruditsioon.ncripterquantumsafe.domain.exception.nCripterException;
 import com.eruditsioon.ncripterquantumsafe.domain.port.out.CryptoEngine;
+import com.eruditsioon.ncripterquantumsafe.domain.port.out.MlKemKeyExchangePort;
+import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulationResult;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KeyGenerationResult;
+import com.eruditsioon.ncripterquantumsafe.domain.model.PublicKeyResult;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+import java.util.Base64;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
@@ -14,7 +21,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 @Component
-public class KyberProvider implements CryptoEngine {
+public class KyberProvider implements CryptoEngine, MlKemKeyExchangePort {
 
     private static final String KEM_ALGORITHM = "ML-KEM";
     private static final String ML_DSA_ALGORITHM = "ML-DSA";
@@ -208,6 +215,53 @@ public class KyberProvider implements CryptoEngine {
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException
                 | SignatureException e) {
             throw new nCripterException("Verification failed for label: " + keyLabel, e);
+        }
+    }
+
+    // --- MlKemKeyExchangePort Implementation ---
+
+    @Override
+    public Optional<EncapsulationResult> encapsulate(String pubKeyIdentifier) {
+        throw new UnsupportedOperationException("Software encapsulation not implemented natively yet");
+    }
+
+    @Override
+    public Optional<byte[]> decapsulateAndDecrypt(String privKeyIdentifier, byte[] encapsulation, byte[] iv,
+            byte[] cryptogram) {
+        try {
+            return Optional.of(this.decapsulateEncryptionAESGCM(encapsulation, iv, cryptogram, privKeyIdentifier));
+        } catch (Exception e) {
+            logger.error("Failed ML-KEM decapsulateAndDecrypt via Software", e);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<KeyGenerationResult> generateKeyPair(String ident, String appName, String outFormat) {
+        try {
+            // Defaults to ML_KEM_768 for bridging to the legacy API
+            this.generateMLKEMKeyPair(ident, "ML-KEM-768");
+
+            byte[] pubKey = this.getKyberPublicKey(ident);
+            String b64PubKey = Base64.getEncoder().encodeToString(pubKey);
+
+            return Optional.of(new KeyGenerationResult(true, "Success", b64PubKey,
+                    outFormat != null ? outFormat : "der", "base64"));
+        } catch (Exception e) {
+            logger.error("Failed ML-KEM generateKeyPair via Software", e);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<PublicKeyResult> getPublicKey(String ident, String appName, String outFormat) {
+        try {
+            byte[] pubKey = this.getKyberPublicKey(ident);
+            String b64PubKey = Base64.getEncoder().encodeToString(pubKey);
+            return Optional.of(new PublicKeyResult(b64PubKey, outFormat != null ? outFormat : "der", "base64"));
+        } catch (Exception e) {
+            logger.error("Failed ML-KEM getPublicKey via Software", e);
+            return Optional.empty();
         }
     }
 }
