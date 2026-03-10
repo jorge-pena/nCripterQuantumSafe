@@ -4,14 +4,16 @@ public class GenerateMLKEMKeyPairResponse {
     private String keyLabel;
     private String parameterSet;
     private String status;
+    private String publicKey;
 
     public GenerateMLKEMKeyPairResponse() {
     }
 
-    public GenerateMLKEMKeyPairResponse(String keyLabel, String parameterSet, String status) {
+    public GenerateMLKEMKeyPairResponse(String keyLabel, String parameterSet, String status, String publicKey) {
         this.keyLabel = keyLabel;
         this.parameterSet = parameterSet;
         this.status = status;
+        this.publicKey = publicKey;
     }
 
     public String getKeyLabel() {
@@ -36,5 +38,13 @@ public class GenerateMLKEMKeyPairResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 }

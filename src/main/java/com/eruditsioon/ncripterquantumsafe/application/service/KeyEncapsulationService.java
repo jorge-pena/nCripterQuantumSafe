@@ -3,7 +3,6 @@ package com.eruditsioon.ncripterquantumsafe.application.service;
 import com.eruditsioon.ncripterquantumsafe.domain.port.in.KeyEncapsulationUseCase;
 import com.eruditsioon.ncripterquantumsafe.domain.port.out.MlKemKeyExchangePort;
 import org.springframework.stereotype.Service;
-import java.util.Base64;
 
 @Service
 public class KeyEncapsulationService implements KeyEncapsulationUseCase {
@@ -14,10 +13,16 @@ public class KeyEncapsulationService implements KeyEncapsulationUseCase {
     }
 
     @Override
-    public byte[] requestKyberPublicKey(String keyLabel) {
-        return mlKemKeyExchangePort.getPublicKey(keyLabel, null, null)
-                .map(result -> Base64.getDecoder().decode(result.publicKey()))
+    public String requestKyberPublicKey(String keyLabel, String outFormat) {
+        return mlKemKeyExchangePort.getPublicKey(keyLabel, "nCripter", outFormat)
+                .map(result -> result.publicKey())
                 .orElseThrow(() -> new RuntimeException("Failed to get public key for label: " + keyLabel));
+    }
+
+    @Override
+    public com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulationResult encapsulateKyber(String keyLabel) {
+        return mlKemKeyExchangePort.encapsulate(keyLabel)
+                .orElseThrow(() -> new RuntimeException("Failed to encapsulate against public key label: " + keyLabel));
     }
 
     @Override
@@ -29,8 +34,9 @@ public class KeyEncapsulationService implements KeyEncapsulationUseCase {
     }
 
     @Override
-    public void generateMLKEMKeyPair(String keyLabel, String parameterSet) {
-        mlKemKeyExchangePort.generateKeyPair(keyLabel, null, null)
+    public String generateMLKEMKeyPair(String keyLabel, String parameterSet, String outFormat) {
+        return mlKemKeyExchangePort.generateKeyPair(keyLabel, "nCripter", outFormat)
+                .map(result -> result.publicKey())
                 .orElseThrow(() -> new RuntimeException("Failed to generate ML-KEM key pair"));
     }
 }

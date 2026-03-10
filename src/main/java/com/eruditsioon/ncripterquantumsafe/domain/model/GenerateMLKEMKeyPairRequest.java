@@ -3,13 +3,15 @@ package com.eruditsioon.ncripterquantumsafe.domain.model;
 public class GenerateMLKEMKeyPairRequest {
     private String keyLabel;
     private String parameterSet;
+    private String outFormat = "x509-pem";
 
     public GenerateMLKEMKeyPairRequest() {
     }
 
-    public GenerateMLKEMKeyPairRequest(String keyLabel, String parameterSet) {
+    public GenerateMLKEMKeyPairRequest(String keyLabel, String parameterSet, String outFormat) {
         this.keyLabel = keyLabel;
         this.parameterSet = parameterSet;
+        this.outFormat = outFormat != null ? outFormat : "x509-pem";
     }
 
     public String getKeyLabel() {
@@ -26,5 +28,13 @@ public class GenerateMLKEMKeyPairRequest {
 
     public void setParameterSet(String parameterSet) {
         this.parameterSet = parameterSet;
+    }
+
+    public String getOutFormat() {
+        return outFormat;
+    }
+
+    public void setOutFormat(String outFormat) {
+        this.outFormat = outFormat;
     }
 }

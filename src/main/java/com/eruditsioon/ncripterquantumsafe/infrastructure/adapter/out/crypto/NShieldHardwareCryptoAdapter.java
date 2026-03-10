@@ -26,7 +26,7 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
     public NShieldHardwareCryptoAdapter(
             RestClient.Builder restClientBuilder,
             @Value("${crypto.nshield.url:http://127.0.0.1:8000}") String nshieldApiUrl) {
-        this.restClient = restClientBuilder.baseUrl(nshieldApiUrl).build();
+        this.restClient = restClientBuilder.baseUrl(java.util.Objects.requireNonNull(nshieldApiUrl)).build();
         log.info("Initialized NShieldHardwareCryptoAdapter pointing to {}", nshieldApiUrl);
     }
 
@@ -81,7 +81,7 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
     @Override
     public Optional<KeyGenerationResult> generateKeyPair(String ident, String appName, String outFormat) {
         try {
-            var requestBody = new GenerateRequest(ident, appName, outFormat);
+            var requestBody = new GenerateRequest(ident, "simple", outFormat);
 
             var response = restClient.post()
                     .uri("/generate-mlkem-keypair")
@@ -106,7 +106,7 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
     @Override
     public Optional<PublicKeyResult> getPublicKey(String ident, String appName, String outFormat) {
         try {
-            var requestBody = new ExportPublicKeyRequest(ident, appName, outFormat);
+            var requestBody = new ExportPublicKeyRequest(ident, "simple", outFormat);
 
             var response = restClient.post()
                     .uri("/get-public-mlkem-key")

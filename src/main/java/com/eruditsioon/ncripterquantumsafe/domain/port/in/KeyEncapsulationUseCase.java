@@ -1,10 +1,12 @@
 package com.eruditsioon.ncripterquantumsafe.domain.port.in;
 
 public interface KeyEncapsulationUseCase {
-    byte[] requestKyberPublicKey(String keyLabel);
+    String requestKyberPublicKey(String keyLabel, String outFormat);
+
+    com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulationResult encapsulateKyber(String keyLabel);
 
     byte[] decapsulateEncryptionAESGCM(byte[] encapsulation, byte[] initializationVector, byte[] cryptogram,
             String keyLabel);
 
-    void generateMLKEMKeyPair(String keyLabel, String parameterSet);
+    String generateMLKEMKeyPair(String keyLabel, String parameterSet, String outFormat);
 }

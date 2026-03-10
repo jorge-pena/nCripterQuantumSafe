@@ -1,20 +1,20 @@
 package com.eruditsioon.ncripterquantumsafe.domain.model;
 
 public class PublicKeyResponse {
-    private byte[] encodedPublicKey;
+    private String encodedPublicKey;
 
     public PublicKeyResponse() {
     }
 
-    public PublicKeyResponse(byte[] encodedPublicKey) {
+    public PublicKeyResponse(String encodedPublicKey) {
         this.encodedPublicKey = encodedPublicKey;
     }
 
-    public byte[] getEncodedPublicKey() {
+    public String getEncodedPublicKey() {
         return encodedPublicKey;
     }
 
-    public void setEncodedPublicKey(byte[] encodedPublicKey) {
+    public void setEncodedPublicKey(String encodedPublicKey) {
         this.encodedPublicKey = encodedPublicKey;
     }
 }

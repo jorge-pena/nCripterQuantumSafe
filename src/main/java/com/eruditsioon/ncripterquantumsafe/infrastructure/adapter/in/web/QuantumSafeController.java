@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eruditsioon.ncripterquantumsafe.domain.model.GenerateMLKEMKeyPairRequest;
 import com.eruditsioon.ncripterquantumsafe.domain.model.GenerateMLKEMKeyPairResponse;
+import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulateKyberRequest;
+import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulateKyberResponse;
+import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulationResult;
 
 @RestController
 @RequestMapping("/api/qs-crypto")
@@ -34,7 +37,14 @@ public class QuantumSafeController {
 
     @PostMapping("/request-kyber-public-key")
     public PublicKeyResponse RequestKyberPublicKey(@RequestBody PublicKeyRequest publicKeyRequest) {
-        return new PublicKeyResponse(keyEncapsulationUseCase.requestKyberPublicKey(publicKeyRequest.getKeyLabel()));
+        return new PublicKeyResponse(keyEncapsulationUseCase.requestKyberPublicKey(publicKeyRequest.getKeyLabel(),
+                publicKeyRequest.getOutFormat()));
+    }
+
+    @PostMapping("/encapsulate-kyber")
+    public EncapsulateKyberResponse encapsulateKyber(@RequestBody EncapsulateKyberRequest request) {
+        EncapsulationResult result = keyEncapsulationUseCase.encapsulateKyber(request.getKeyLabel());
+        return new EncapsulateKyberResponse(result.encapsulation(), result.sharedSecret());
     }
 
     @PostMapping("/decapsulate-encryption-aes-gcm")
@@ -81,8 +91,10 @@ public class QuantumSafeController {
         }
 
         try {
-            keyEncapsulationUseCase.generateMLKEMKeyPair(request.getKeyLabel(), request.getParameterSet());
-            return new GenerateMLKEMKeyPairResponse(request.getKeyLabel(), request.getParameterSet(), "Success");
+            String pubKey = keyEncapsulationUseCase.generateMLKEMKeyPair(request.getKeyLabel(),
+                    request.getParameterSet(), request.getOutFormat());
+            return new GenerateMLKEMKeyPairResponse(request.getKeyLabel(), request.getParameterSet(), "Success",
+                    pubKey);
         } catch (Exception e) {
             throw new nCripterException(
                     "Failed to Create Key Pair:" + request.getKeyLabel() + " " + request.getParameterSet(), e);
