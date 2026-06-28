@@ -20,6 +20,13 @@ import com.eruditsioon.ncripterquantumsafe.domain.model.GenerateMLKEMKeyPairResp
 import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulateKyberRequest;
 import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulateKyberResponse;
 import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulationResult;
+import com.eruditsioon.ncripterquantumsafe.domain.port.in.KmacUseCase;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KmacGenerateRequest;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KmacGenerateResponse;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KmacSignRequest;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KmacSignResponse;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KmacVerifyRequest;
+import com.eruditsioon.ncripterquantumsafe.domain.model.KmacVerifyResponse;
 
 @RestController
 @RequestMapping("/api/qs-crypto")
@@ -27,12 +34,14 @@ public class QuantumSafeController {
 
     private final KeyEncapsulationUseCase keyEncapsulationUseCase;
     private final DigitalSignatureUseCase digitalSignatureUseCase;
+    private final KmacUseCase kmacUseCase;
 
     @Autowired
     public QuantumSafeController(KeyEncapsulationUseCase keyEncapsulationUseCase,
-            DigitalSignatureUseCase digitalSignatureUseCase) {
+            DigitalSignatureUseCase digitalSignatureUseCase, KmacUseCase kmacUseCase) {
         this.keyEncapsulationUseCase = keyEncapsulationUseCase;
         this.digitalSignatureUseCase = digitalSignatureUseCase;
+        this.kmacUseCase = kmacUseCase;
     }
 
     @PostMapping("/request-kyber-public-key")
@@ -129,6 +138,42 @@ public class QuantumSafeController {
                     isValid ? "Signature is valid" : "Signature is invalid");
         } catch (Exception e) {
             throw new nCripterException("Verification failed", e);
+        }
+    }
+
+    @PostMapping("/kmac/generate-key")
+    public KmacGenerateResponse generateKmacKey(@RequestBody KmacGenerateRequest request) {
+        if (request.getKeyLabel() == null || !request.getKeyLabel().matches("^[a-z0-9-]+$")) {
+            throw new nCripterException("Invalid key label format.");
+        }
+        try {
+            return kmacUseCase.generateKey(request);
+        } catch (Exception e) {
+            throw new nCripterException("Failed to generate KMAC key", e);
+        }
+    }
+
+    @PostMapping("/kmac/sign")
+    public KmacSignResponse signKmac(@RequestBody KmacSignRequest request) {
+        if (request.getKeyLabel() == null || request.getPayload() == null) {
+            throw new IllegalArgumentException("Key label and payload must not be null.");
+        }
+        try {
+            return kmacUseCase.sign(request);
+        } catch (Exception e) {
+            throw new nCripterException("KMAC signing failed", e);
+        }
+    }
+
+    @PostMapping("/kmac/verify")
+    public KmacVerifyResponse verifyKmac(@RequestBody KmacVerifyRequest request) {
+        if (request.getKeyLabel() == null || request.getPayload() == null || request.getTag() == null) {
+            throw new IllegalArgumentException("Key label, payload, and tag must not be null.");
+        }
+        try {
+            return kmacUseCase.verify(request);
+        } catch (Exception e) {
+            throw new nCripterException("KMAC verification failed", e);
         }
     }
 

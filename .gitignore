@@ -36,3 +36,11 @@ KeyVault/
 *.prv
 *.pub
 app.log
+
+# Agent & IDE Configurations / Drafts / Logs
+.agent/
+.agents/
+DraftPromp.md
+DraftPrompt.md
+*.log
+

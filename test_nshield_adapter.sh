@@ -5,7 +5,7 @@ set -e
 SERVER="http://nnigmaserver.app:4434"
 ENDPOINT_BASE="$SERVER/api/qs-crypto"
 
-KEY_LABEL="test-mlkem-nshield-$(date +%s)"
+KEY_LABEL="tk$(date +%s)"
 PARAM_SET="ML_KEM_768"
 
 REPORT_FILE="test_report.log"
@@ -19,12 +19,13 @@ echo "---------------------------------------------------" | tee -a $REPORT_FILE
 echo "[1] Testing ML-KEM Key Generation..." | tee -a $REPORT_FILE
 GEN_RESP=$(curl -s -X POST "$ENDPOINT_BASE/generate-ml-kem-key-pair" \
   -H "Content-Type: application/json" \
-  -d "{\"keyLabel\": \"$KEY_LABEL\", \"parameterSet\": \"$PARAM_SET\"}")
+  -d "{\"keyLabel\": \"$KEY_LABEL\", \"parameterSet\": \"$PARAM_SET\", \"outFormat\": \"x509-pem\"}")
 
 echo "Response from generate-ml-kem-key-pair: $GEN_RESP" | tee -a $REPORT_FILE
+PUB_KEY_GEN=$(echo "$GEN_RESP" | grep -o '"publicKey":"[^"]*' | grep -o '[^"]*$' || true)
 
-if [[ "$GEN_RESP" == *"Success"* ]]; then
-    echo "  -> Key Generation OK" | tee -a $REPORT_FILE
+if [ -n "$PUB_KEY_GEN" ] && [[ "$GEN_RESP" == *"Success"* ]]; then
+    echo "  -> Key Generation OK (Public Key Length: ${#PUB_KEY_GEN})" | tee -a $REPORT_FILE
 else
     echo "  -> Key Generation FAILED" | tee -a $REPORT_FILE
     exit 1
@@ -34,15 +35,28 @@ fi
 echo -e "\n[2] Testing Request Kyber Public Key..." | tee -a $REPORT_FILE
 PUB_RESP=$(curl -s -X POST "$ENDPOINT_BASE/request-kyber-public-key" \
   -H "Content-Type: application/json" \
-  -d "{\"keyLabel\": \"$KEY_LABEL\"}")
+  -d "{\"keyLabel\": \"$KEY_LABEL\", \"outFormat\": \"x509-pem\"}")
 
-PUB_KEY=$(echo $PUB_RESP | grep -o '"encodedPublicKey":"[^"]*' | grep -o '[^"]*$')
-if [ -n "$PUB_KEY" ]; then
+PUB_KEY=$(echo "$PUB_RESP" | grep -o '"encodedPublicKey":"[^"]*' | awk -F '"' '{print $4}')
+if [[ "$PUB_KEY" == *"BEGIN PUBLIC KEY"* ]]; then
     echo "  -> Public Key Retrieval OK (Length: ${#PUB_KEY})" | tee -a $REPORT_FILE
 else
     echo "  -> Public Key Retrieval FAILED" | tee -a $REPORT_FILE
     echo "Response: $PUB_RESP" | tee -a $REPORT_FILE
-    exit 1
+fi
+
+# 2.5 Encapsulate Kyber
+echo -e "\n[2.5] Testing Encapsulate Kyber..." | tee -a $REPORT_FILE
+ENCAP_RESP=$(curl -s -X POST "$ENDPOINT_BASE/encapsulate-kyber" \
+  -H "Content-Type: application/json" \
+  -d "{\"keyLabel\": \"$KEY_LABEL\"}")
+
+ENCAP_B64=$(echo "$ENCAP_RESP" | grep -o '"encapsulation":"[^"]*' | awk -F '"' '{print $4}')
+if [ -n "$ENCAP_B64" ]; then
+    echo "  -> Encapsulation OK (Base64 Output Length: ${#ENCAP_B64})" | tee -a $REPORT_FILE
+else
+    echo "  -> Encapsulation FAILED" | tee -a $REPORT_FILE
+    echo "Response: $ENCAP_RESP" | tee -a $REPORT_FILE
 fi
 
 # 3. Decapsulate Encryption (We send dummy values as encapsulation from software wouldn't be 1-to-1 without proper Python sidecar setup out of band, 

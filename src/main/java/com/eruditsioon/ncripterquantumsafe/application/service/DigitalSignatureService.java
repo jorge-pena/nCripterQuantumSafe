@@ -1,30 +1,30 @@
 package com.eruditsioon.ncripterquantumsafe.application.service;
 
 import com.eruditsioon.ncripterquantumsafe.domain.port.in.DigitalSignatureUseCase;
-import com.eruditsioon.ncripterquantumsafe.domain.port.out.CryptoEngine;
+import com.eruditsioon.ncripterquantumsafe.domain.port.out.MlDsaSignaturePort;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DigitalSignatureService implements DigitalSignatureUseCase {
 
-    private final CryptoEngine cryptoEngine;
+    private final MlDsaSignaturePort mlDsaSignaturePort;
 
-    public DigitalSignatureService(CryptoEngine cryptoEngine) {
-        this.cryptoEngine = cryptoEngine;
+    public DigitalSignatureService(MlDsaSignaturePort mlDsaSignaturePort) {
+        this.mlDsaSignaturePort = mlDsaSignaturePort;
     }
 
     @Override
     public void generateMLDSAKeyPair(String keyLabel, String parameterSet) {
-        cryptoEngine.generateMLDSAKeyPair(keyLabel, parameterSet);
+        mlDsaSignaturePort.generateMLDSAKeyPair(keyLabel, parameterSet);
     }
 
     @Override
     public byte[] signMLDSA(String keyLabel, byte[] data) {
-        return cryptoEngine.signMLDSA(keyLabel, data);
+        return mlDsaSignaturePort.signMLDSA(keyLabel, data);
     }
 
     @Override
     public boolean verifyMLDSA(String keyLabel, byte[] data, byte[] signature) {
-        return cryptoEngine.verifyMLDSA(keyLabel, data, signature);
+        return mlDsaSignaturePort.verifyMLDSA(keyLabel, data, signature);
     }
 }

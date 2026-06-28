@@ -13,7 +13,7 @@
                 "header": [],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"keyLabel\": \"kyber-test-768\"\n}",
+                    "raw": "{\n  \"keyLabel\": \"kyber-test-768\",\n  \"outFormat\": \"x509-pem\"\n}",
                     "options": {
                         "raw": {
                             "language": "json"
@@ -32,6 +32,37 @@
                         "api",
                         "qs-crypto",
                         "request-kyber-public-key"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "encapsulate-kyber",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"kyber-test-768\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/encapsulate-kyber",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "encapsulate-kyber"
                     ]
                 }
             },
@@ -168,7 +199,7 @@
                 "header": [],
                 "body": {
                     "mode": "raw",
-                    "raw": "{\n  \"keyLabel\": \"test-kem-key\",\n  \"parameterSet\": \"ML_KEM_768\"\n}",
+                    "raw": "{\n  \"keyLabel\": \"test-kem-key\",\n  \"parameterSet\": \"ML_KEM_768\",\n  \"outFormat\": \"x509-pem\"\n}",
                     "options": {
                         "raw": {
                             "language": "json"
@@ -187,6 +218,102 @@
                         "api",
                         "qs-crypto",
                         "generate-ml-kem-key-pair"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "generate-kmac-key",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-kmac-key\",\n  \"algorithm\": \"KMAC128\",\n  \"keySizeBytes\": 16\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/kmac/generate-key",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "kmac",
+                        "generate-key"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "sign-kmac",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-kmac-key\",\n  \"algorithm\": \"KMAC128\",\n  \"customizationString\": \"CustomString\",\n  \"outputLenBits\": 256,\n  \"payload\": \"U2VuZCB0aGlzIGRhdGE=\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/kmac/sign",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "kmac",
+                        "sign"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "verify-kmac",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"keyLabel\": \"test-kmac-key\",\n  \"algorithm\": \"KMAC128\",\n  \"customizationString\": \"CustomString\",\n  \"outputLenBits\": 256,\n  \"payload\": \"U2VuZCB0aGlzIGRhdGE=\",\n  \"tag\": \"HD3P2j5IquR4s34IUyGnCIUhIk8JrA0rU1gFDO8fvpc=\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://nnigmaserver.app:4434/api/qs-crypto/kmac/verify",
+                    "protocol": "http",
+                    "host": [
+                        "nnigmaserver",
+                        "app"
+                    ],
+                    "port": "4434",
+                    "path": [
+                        "api",
+                        "qs-crypto",
+                        "kmac",
+                        "verify"
                     ]
                 }
             },

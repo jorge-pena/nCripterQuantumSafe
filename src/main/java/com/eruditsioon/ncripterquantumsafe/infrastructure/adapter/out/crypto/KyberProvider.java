@@ -1,7 +1,7 @@
 package com.eruditsioon.ncripterquantumsafe.infrastructure.adapter.out.crypto;
 
 import com.eruditsioon.ncripterquantumsafe.domain.exception.nCripterException;
-import com.eruditsioon.ncripterquantumsafe.domain.port.out.CryptoEngine;
+import com.eruditsioon.ncripterquantumsafe.domain.port.out.MlDsaSignaturePort;
 import com.eruditsioon.ncripterquantumsafe.domain.port.out.MlKemKeyExchangePort;
 import com.eruditsioon.ncripterquantumsafe.domain.model.EncapsulationResult;
 import com.eruditsioon.ncripterquantumsafe.domain.model.KeyGenerationResult;
@@ -21,7 +21,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 @Component
-public class KyberProvider implements CryptoEngine, MlKemKeyExchangePort {
+public class KyberProvider implements MlDsaSignaturePort, MlKemKeyExchangePort {
 
     private static final String KEM_ALGORITHM = "ML-KEM";
     private static final String ML_DSA_ALGORITHM = "ML-DSA";
@@ -128,7 +128,6 @@ public class KyberProvider implements CryptoEngine, MlKemKeyExchangePort {
         }
     }
 
-    @Override
     public void generateMLKEMKeyPair(String keyLabel, String parameterSet) {
         try {
             // Validate and normalize parameter set (e.g., ML_KEM_768 -> ML-KEM-768)

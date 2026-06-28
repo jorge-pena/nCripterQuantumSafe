@@ -36,7 +36,7 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
             var requestBody = new EncapsulateRequest(pubKeyIdentifier);
 
             var response = restClient.post()
-                    .uri("/encapsulate")
+                    .uri("/api/v1/mlkem/encapsulate")
                     .body(requestBody)
                     .retrieve()
                     .body(EncapsulateResponse.class);
@@ -63,7 +63,7 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
                     Base64.getEncoder().encodeToString(cryptogram));
 
             var response = restClient.post()
-                    .uri("/decapsulate-decrypt")
+                    .uri("/api/v1/mlkem/decapsulate-decrypt")
                     .body(requestBody)
                     .retrieve()
                     .body(DecryptResponse.class);
@@ -84,18 +84,31 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
             var requestBody = new GenerateRequest(ident, "simple", outFormat);
 
             var response = restClient.post()
-                    .uri("/generate-mlkem-keypair")
+                    .uri("/api/v1/mlkem/generate-mlkem-keypair")
                     .body(requestBody)
                     .retrieve()
                     .body(GenerateResponse.class);
 
             if (response != null && response.success()) {
+                String pubKey = response.public_key();
+                String format = response.format();
+                String encoding = response.encoding();
+
+                if (pubKey == null || pubKey.trim().isEmpty()) {
+                    var pubKeyOpt = getPublicKey(ident, appName, outFormat);
+                    if (pubKeyOpt.isPresent()) {
+                        pubKey = pubKeyOpt.get().publicKey();
+                        format = pubKeyOpt.get().format();
+                        encoding = pubKeyOpt.get().encoding();
+                    }
+                }
+
                 return Optional.of(new KeyGenerationResult(
                         response.success(),
                         response.message(),
-                        response.public_key(),
-                        response.format(),
-                        response.encoding()));
+                        pubKey,
+                        format,
+                        encoding));
             }
         } catch (Exception e) {
             log.error("Failed to execute native HSM Key Generation via Python Sidecar: {}", e.getMessage());
@@ -109,7 +122,7 @@ public class NShieldHardwareCryptoAdapter implements MlKemKeyExchangePort {
             var requestBody = new ExportPublicKeyRequest(ident, "simple", outFormat);
 
             var response = restClient.post()
-                    .uri("/get-public-mlkem-key")
+                    .uri("/api/v1/mlkem/get-public-mlkem-key")
                     .body(requestBody)
                     .retrieve()
                     .body(ExportPublicKeyResponse.class);

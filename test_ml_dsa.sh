@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base URL
-URL="http://localhost:8834/api/qs-crypto"
+URL="http://localhost:4434/api/qs-crypto"
 
 # 1. Generate Key Pair
 echo "Generating Key Pair..."
